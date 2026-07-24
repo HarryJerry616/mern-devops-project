@@ -1,0 +1,52 @@
+services:
+  mongodb:
+    image: mongo:7
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+
+  client:
+    build: ./client
+    ports:
+      - "3000:3000"
+    depends_on:
+      - server1
+      - server2
+
+  server1:
+   build: ./server
+   depends_on:
+    - mongodb
+   environment:
+    PORT: 8080
+    MONGO_URI: mongodb://mongodb:27017/mern_devops
+    JWT_SECRET: devsecret
+    SERVER_NAME: Server 1
+
+  server2:
+   build: ./server
+   depends_on:
+    - mongodb
+   environment:
+    PORT: 8080
+    MONGO_URI: mongodb://mongodb:27017/mern_devops
+    JWT_SECRET: devsecret
+    SERVER_NAME: Server 2
+
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - client
+      - server1
+      - server2
+
+volumes:
+  mongodb_data:

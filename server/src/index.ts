@@ -5,19 +5,26 @@ import app from './utils/app' // (server)
 import mongo from './utils/mongo' // (database)
 import { PORT } from './constants/index'
 import authRoutes from './routes/auth'
+import taskRoutes from './routes/task'
 
 const bootstrap = async () => {
   await mongo.connect()
 
   app.get('/', (req, res) => {
-    res.status(200).send('Hello, world!')
-  })
+    res.status(200).send(`Hello from ${process.env.SERVER_NAME}`)
+})
 
   app.get('/healthz', (req, res) => {
     res.status(204).end()
   })
 
   app.use('/auth', authRoutes)
+  app.use('/tasks', taskRoutes)
+  app.get("/whoami", (req, res) => {
+  res.json({
+    server: process.env.SERVER_NAME,
+  });
+});
   // add rest of routes here...
 
   app.listen(PORT, () => {
