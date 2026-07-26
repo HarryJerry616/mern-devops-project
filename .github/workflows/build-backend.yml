@@ -1,31 +1,29 @@
-name: Build Backend (Server)
+name: Backend CI/CD
 
 on:
-  pull_request:
+  push:
     branches:
       - main
 
 jobs:
-  build-backend:
+  backend:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: './server'
-    strategy:
-      matrix:
-        node-version: [20.x]
-    steps:
-      - name: Check out code
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          clean: true
 
-      - name: Use Node.js ${{ matrix.node-version }}
-        uses: actions/setup-node@v4
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
         with:
-          node-version: ${{ matrix.node-version }}
-          cache: 'npm'
-          cache-dependency-path: './server/package-lock.json'
-      - run: npm ci
-      - run: npm run build
+          registry: ghcr.io
+          username: ${{ secrets.GHCR_USERNAME }}
+          password: ${{ secrets.GHCR_TOKEN }}
+
+      - name: Build Server Image
+        run: |
+          docker build -t ghcr.io/${{ secrets.GHCR_USERNAME }}/mern-server1:latest ./server
+
+      - name: Push Server Image
+        run: |
+          docker push ghcr.io/${{ secrets.GHCR_USERNAME }}/mern-server1:latest
