@@ -9,7 +9,7 @@ services:
       - mongodb_data:/data/db
 
   client:
-    build: ./client
+    image: ghcr.io/harryjerry616/mern-client:latest
     ports:
       - "3000:3000"
     depends_on:
@@ -17,7 +17,7 @@ services:
       - server2
 
   server1:
-   build: ./server
+   image: ghcr.io/harryjerry616/mern-server1:latest
    depends_on:
     - mongodb
    environment:
@@ -27,7 +27,7 @@ services:
     SERVER_NAME: Server 1
 
   server2:
-   build: ./server
+   image: ghcr.io/harryjerry616/mern-server2:latest
    depends_on:
     - mongodb
    environment:
