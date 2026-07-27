@@ -1,0 +1,30 @@
+stages:
+  - build
+  - test
+
+variables:
+  DOCKER_DRIVER: overlay2
+
+build-client:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - docker build -t mern-client ./client
+
+build-server:
+  stage: build
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - docker build -t mern-server ./server
+
+test-compose:
+  stage: test
+  image: docker:24
+  services:
+    - docker:24-dind
+  script:
+    - docker compose config
