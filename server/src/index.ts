@@ -6,6 +6,8 @@ import mongo from './utils/mongo' // (database)
 import { PORT } from './constants/index'
 import authRoutes from './routes/auth'
 import taskRoutes from './routes/task'
+import client from 'prom-client'
+client.collectDefaultMetrics()
 
 const bootstrap = async () => {
   await mongo.connect()
@@ -25,6 +27,10 @@ const bootstrap = async () => {
     server: process.env.SERVER_NAME,
   });
 });
+  app.get('/metrics', async (req, res) => {
+  res.set('Content-Type', client.register.contentType)
+  res.end(await client.register.metrics())
+})
   // add rest of routes here...
 
   app.listen(PORT, () => {
