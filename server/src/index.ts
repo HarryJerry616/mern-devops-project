@@ -1,6 +1,13 @@
 import dotenv from 'dotenv'
 dotenv.config()
 
+import * as Sentry from "@sentry/node";
+
+Sentry.init({
+  dsn: process.env.SENTRY_DSN,
+  tracesSampleRate: 1.0,
+});
+
 import app from './utils/app' // (server)
 import mongo from './utils/mongo' // (database)
 import { PORT } from './constants/index'
@@ -31,7 +38,12 @@ const bootstrap = async () => {
   res.set('Content-Type', client.register.contentType)
   res.end(await client.register.metrics())
 })
+
+  app.get("/debug-sentry", (_req, _res) => {
+    throw new Error("Sentry test error!");
+});
   // add rest of routes here...
+  Sentry.setupExpressErrorHandler(app);
 
   app.listen(PORT, () => {
     console.log(`✅ Server is listening on port: ${PORT}`)
