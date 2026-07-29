@@ -69,7 +69,7 @@ services:
     restart: unless-stopped
   
   loki:
-    image: grafana/loki:latest
+    image: grafana/loki:2.9.8
     container_name: loki
     ports:
       - "3100:3100"
@@ -80,7 +80,7 @@ services:
     restart: unless-stopped
   
   promtail:
-    image: grafana/promtail:latest
+    image: grafana/promtail:2.9.8
     container_name: promtail
     command: 
       - -config.file=/etc/promtail/config.yml
