@@ -38,6 +38,6 @@
   "devDependencies": {
     "@types/react": "^19.0.12",
     "@types/react-dom": "^19.0.4",
-    "serve": "^14.2.5"
+    "serve": "^14.2.6"
   }
 }
