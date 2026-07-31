@@ -6,6 +6,9 @@ import * as Sentry from "@sentry/node";
 Sentry.init({
   dsn: process.env.SENTRY_DSN,
   tracesSampleRate: 1.0,
+  integrations: [
+    Sentry.expressIntegration(),
+  ],
 });
 
 import app from './utils/app' // (server)
@@ -39,8 +42,14 @@ const bootstrap = async () => {
   res.end(await client.register.metrics())
 })
 
-  app.get("/debug-sentry", (_req, _res) => {
+  app.get("/debug-sentry", async (_req, res) => {
+   try {
     throw new Error("Sentry test error!");
+  } catch (err) {
+    Sentry.captureException(err as Error);
+    await Sentry.flush(5000);
+    res.status(500).send("Sent test event to Sentry");
+  }
 });
   // add rest of routes here...
   Sentry.setupExpressErrorHandler(app);
